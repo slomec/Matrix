@@ -1,0 +1,68 @@
+{
+	"file" : "matrix0_1.html",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"color1" : 
+			{
+				"index" : 3,
+				"order" : 103,
+				"text" : "Color 1",
+				"type" : "color",
+				"value" : "1 0 0"
+			},
+			"color2" : 
+			{
+				"index" : 4,
+				"order" : 104,
+				"text" : "Color 2",
+				"type" : "color",
+				"value" : "0 1 0.08235294117647059"
+			},
+			"color3" : 
+			{
+				"index" : 5,
+				"order" : 105,
+				"text" : "Color 3",
+				"type" : "color",
+				"value" : "0 0.19215686274509805 1"
+			},
+			"colors" : 
+			{
+				"index" : 2,
+				"order" : 102,
+				"text" : "colors",
+				"type" : "group",
+				"value" : ""
+			},
+			"enablePause" : 
+			{
+				"index" : 0,
+				"order" : 100,
+				"text" : "Enable Pause",
+				"type" : "bool",
+				"value" : true
+			},
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0 0 0"
+			},
+			"text" : 
+			{
+				"index" : 1,
+				"order" : 101,
+				"text" : "Text",
+				"type" : "textinput",
+				"value" : "matrix"
+			}
+		}
+	},
+	"preview" : "image.png",
+	"title" : "matrix0_1",
+	"type" : "web",
+	"version" : 0
+}
