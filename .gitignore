@@ -1,2 +1,3 @@
-./project.json
-./image.png
+#ignore filews for WallPaperEngine
+/project.json
+/image.png
