@@ -1,14 +1,84 @@
+window.wallpaperPropertyListener = {
+  applyUserProperties: function (properties) {
+    if (properties.color1) {
+      colors[0] = properties.color1.value
+        .split(" ")
+        .map(function (c) {
+          return Math.ceil(c * 255);
+        })
+        .join(", ");
+    }
+    if (properties.color2) {
+      colors[1] = properties.color2.value
+        .split(" ")
+        .map(function (c) {
+          return Math.ceil(c * 255);
+        })
+        .join(", ");
+    }
+    if (properties.color3) {
+      colors[2] = properties.color3.value
+        .split(" ")
+        .map(function (c) {
+          return Math.ceil(c * 255);
+        })
+        .join(", ");
+    }
+    if (properties.color4) {
+      colors[3] = properties.color4.value
+        .split(" ")
+        .map(function (c) {
+          return Math.ceil(c * 255);
+        })
+        .join(", ");
+    }
+    if (properties.intervals) {
+      intervals = properties.intervals.value;
+    }
+    if (properties.digitsize) {
+      fontSize = properties.digitsize.value;
+      setCanvas();
+    }
+    if (properties.chanceofnumberdisappearing) {
+      chanseOfdeasapear = properties.chanceofnumberdisappearing.value;
+    }
+    if (properties.intervaltime) {
+      timeInterval = Math.round(properties.intervaltime.value * (1000 / speedOfFall));
+    }
+    if (properties.textsize) {
+      textSize = properties.textsize.value;
+      setCanvas();
+    }
+    if (properties.numberofdigits) {
+      chanseOfspawn = properties.numberofdigits.value / 100;
+    }
+    if (properties.speedoffall) {
+      speedOfFall = properties.speedoffall.value;
+    }
+    if (properties.text) {
+      text = properties.text.value;
+      setCanvas();
+    }
+    if (properties.textflickeringspeed) {
+      imageUpdateSpeed = Math.round(properties.textflickeringspeed.value * (1000 / speedOfFall));
+    }
+    if (properties.tracklength) {
+      fadingSpeed = (100 - properties.tracklength.value) / 100;
+    }
+  },
+};
+
 let text = "matrix";
 let intervals = false;
 let textSize = 40;
 let timeInterval = 200;
-const colors = ["23,20,224", "255,255,255"];
-const chanseOfspawn = 0.02;
-const chanseOfdeasapear = 0.02;
-const fadingSpeed = 0.1;
-const speedOfFall = 66;
-const fontSize = 16;
-const imageUpdateSpeed = 15;
+let colors = ["23,20,224", "255,255,255"];
+let chanseOfspawn = 0.02;
+let chanseOfdeasapear = 0.02;
+let fadingSpeed = 0.1;
+let speedOfFall = 66;
+let fontSize = 16;
+let imageUpdateSpeed = 15;
 
 let alpha = 1;
 let col = 0;
@@ -22,41 +92,44 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const columns = Math.ceil(canvas.width / fontSize);
-const rows = Math.ceil(canvas.height / fontSize);
+let image = [];
+let drops = [];
+function setCanvas() {
+  image = [];
+  drops = [];
+  const columns = Math.ceil(canvas.width / fontSize);
+  const rows = Math.ceil(canvas.height / fontSize);
 
-canvasText.width = columns;
-canvasText.height = rows;
+  canvasText.width = columns;
+  canvasText.height = rows;
 
-textCtx.font = `${textSize}px tahoma`;
+  textCtx.font = `${textSize / (fontSize / 16)}px tahoma`;
 
-const x = Math.round(columns / 2 - textCtx.measureText(text).width / 2);
-const y = Math.round(rows / 2 + textSize / 4);
+  const x = Math.round(columns / 2 - textCtx.measureText(text).width / 2);
+  const y = Math.round(rows / 2 + textSize / (fontSize / 16) / 4);
 
-textCtx.fillText(text, x, y);
+  textCtx.fillText(text, x, y);
 
-const drops = [];
+  for (let i = 0; i < columns; i++) {
+    drops.push([]);
+  }
+  const imageData = textCtx.getImageData(0, 0, window.innerWidth, window.innerHeight);
+  const data = imageData.data;
 
-for (let i = 0; i < columns; i++) {
-  drops.push([]);
-}
-const imageData = textCtx.getImageData(0, 0, window.innerWidth, window.innerHeight);
-const data = imageData.data;
-
-const image = [];
-
-for (let i = 0; i < columns; i++) {
-  image.push([]);
-}
-for (let y = 0; y < rows; y++) {
-  for (let x = 0; x < columns; x++) {
-    const index = (y * canvas.width + x) * 4;
-    const alpha = data[index + 3];
-    if (alpha > 0) {
-      image[x].push(y);
+  for (let i = 0; i < columns; i++) {
+    image.push([]);
+  }
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < columns; x++) {
+      const index = (y * canvas.width + x) * 4;
+      const alpha = data[index + 3];
+      if (alpha > 0) {
+        image[x].push(y);
+      }
     }
   }
 }
+setCanvas();
 function fading() {
   ctx.fillStyle = `rgba(0, 0, 0, ${fadingSpeed})`;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
