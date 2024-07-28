@@ -1,17 +1,15 @@
 let text = "ag";
-let intervals = true;
+let intervals = false;
 let textSize = 40;
-let timeInterval = 10000;
+let timeInterval = 2000;
 const colors = ["23,20,224"];
 const chanseOfspawn = 0.02;
 const chanseOfdeasapear = 0.02;
 const fadingSpeed = 0.1;
 const speedOfFall = 66;
 const fontSize = 16;
-const IntervalOfImageUpdate = 1000;
+const speedOfImageUpdate = 1000;
 
-let fallingMode;
-let imageMode;
 let alpha = 1;
 let col = 0;
 
@@ -29,11 +27,6 @@ const rows = Math.ceil(canvas.height / fontSize);
 
 canvasText.width = columns;
 canvasText.height = rows;
-
-const drops = [];
-for (let i = 0; i < columns; i++) {
-  drops.push([]);
-}
 
 textCtx.font = `${textSize}px Lucida Console`;
 
@@ -64,28 +57,44 @@ function fading() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-function drawFall() {
-  ctx.fillStyle = `rgba(${colors[col]}, ${alpha})`;
-  ctx.font = `${fontSize}px monospace`;
-  for (let i = 0; i < drops.length; i++) {
-    for (let k in drops[i]) {
-      const text = Math.random() > 0.5 ? "0" : "1";
-      ctx.fillText(text, i * fontSize, drops[i][k] * fontSize);
-      if (drops[i][k] * fontSize > canvas.height || Math.random() <= chanseOfdeasapear) {
-        drops[i].pop();
-      }
-      drops[i][k]++;
-    }
-    if (fallingMode) {
-      if (Math.random() <= chanseOfspawn) {
-        drops[i].splice(0, 0, 0);
-      }
-    }
+function drawFall(color) {
+  let falling = true;
+  const drops = [];
+  for (let i = 0; i < columns; i++) {
+    drops.push([]);
   }
+  const interval = setInterval(() => {
+    ctx.fillStyle = `rgba(${color}, ${alpha})`;
+    ctx.font = `${fontSize}px monospace`;
+    for (let i = 0; i < drops.length; i++) {
+      for (let k in drops[i]) {
+        const text = Math.random() > 0.5 ? "0" : "1";
+        ctx.fillText(text, i * fontSize, drops[i][k] * fontSize);
+        if (drops[i][k] * fontSize > canvas.height || Math.random() <= chanseOfdeasapear) {
+          drops[i].pop();
+        }
+        drops[i][k]++;
+      }
+      if (falling) {
+        if (Math.random() <= chanseOfspawn) {
+          drops[i].splice(0, 0, 0);
+        }
+      }
+    }
+  }, speedOfFall);
+  setTimeout(
+    () => {
+      falling = false;
+      setTimeout(() => {
+        clearInterval(interval);
+      }, speedOfFall * rows);
+    },
+    intervals ? timeInterval / 2 : timeInterval
+  );
 }
 
 function drawImage() {
-  if (imageMode) {
+  const interval = setInterval(() => {
     ctx.fillStyle = `rgba(${colors[col]}, ${alpha})`;
     ctx.font = `${fontSize}px monospace`;
     for (let i = 0; i < image.length; i++) {
@@ -94,47 +103,56 @@ function drawImage() {
         ctx.fillText(text, i * fontSize, image[i][k] * fontSize);
       }
     }
+  }, speedOfImageUpdate);
+  if (intervals) {
+    setTimeout(() => {
+      clearInterval(interval);
+    }, timeInterval);
   }
-}
-function switchMode() {
-  fallingMode = !fallingMode;
-  imageMode = !imageMode;
-  if (fallingMode) {
-    col = (col + 1) % colors.length;
-  }
-}
-
-function nextColor() {
-  col = (col + 1) % colors.length;
 }
 
 if (intervals) {
-  fallingMode = true;
-  imageMode = false;
   setInterval(() => {
-    drawFall(), fading();
-  }, speedOfFall);
-  setInterval(() => {
-    drawImage();
-  }, IntervalOfImageUpdate);
-  setInterval(() => {
-    switchMode();
-  }, timeInterval / 2);
-} else {
-  fallingMode = true;
-  imageMode = true;
-  setInterval(() => {
-    drawFall(), fading();
-  }, speedOfFall);
-  setInterval(() => {
-    nextColor();
+    col = (col + 1) % colors.length;
   }, timeInterval);
   setInterval(() => {
+    fading();
+  }, speedOfFall);
+
+  drawFall(colors[col]);
+  setInterval(() => {
+    drawFall(colors[col]);
+  }, timeInterval);
+
+  if (text) {
+    setTimeout(() => {
+      drawImage();
+      setInterval(() => {
+        drawImage();
+      }, timeInterval);
+    }, timeInterval / 2);
+  }
+} else {
+  setInterval(() => {
+    col = (col + 1) % colors.length;
+  }, timeInterval);
+
+  setInterval(() => {
+    fading();
+  }, speedOfFall);
+
+  drawFall(colors[col]);
+  setInterval(() => {
+    drawFall(colors[col]);
+  }, timeInterval);
+
+  if (text) {
     drawImage();
-  }, IntervalOfImageUpdate);
+  }
 }
 
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+  window.location.reload();
 });
