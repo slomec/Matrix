@@ -103,31 +103,36 @@ function setCanvas() {
   canvasText.width = columns;
   canvasText.height = rows;
 
-  textCtx.font = `${textSize / (fontSize / 16)}px tahoma`;
+  document.fonts
+    .load(`${textSize / (fontSize / 16)}px pixel`)
+    .then(() => {
+      textCtx.font = `${textSize / (fontSize / 16)}px pixel`;
+      const x = Math.round(columns / 2 - textCtx.measureText(text).width / 2);
+      const y = Math.round(rows / 2 + textSize / (fontSize / 16) / 4);
+      textCtx.fillText(text, x, y);
 
-  const x = Math.round(columns / 2 - textCtx.measureText(text).width / 2);
-  const y = Math.round(rows / 2 + textSize / (fontSize / 16) / 4);
-
-  textCtx.fillText(text, x, y);
-
-  for (let i = 0; i < columns; i++) {
-    drops.push([]);
-  }
-  const imageData = textCtx.getImageData(0, 0, window.innerWidth, window.innerHeight);
-  const data = imageData.data;
-
-  for (let i = 0; i < columns; i++) {
-    image.push([]);
-  }
-  for (let y = 0; y < rows; y++) {
-    for (let x = 0; x < columns; x++) {
-      const index = (y * canvas.width + x) * 4;
-      const alpha = data[index + 3];
-      if (alpha > 0) {
-        image[x].push(y);
+      for (let i = 0; i < columns; i++) {
+        drops.push([]);
       }
-    }
-  }
+      const imageData = textCtx.getImageData(0, 0, window.innerWidth, window.innerHeight);
+      const data = imageData.data;
+
+      for (let i = 0; i < columns; i++) {
+        image.push([]);
+      }
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < columns; x++) {
+          const index = (y * canvas.width + x) * 4;
+          const alpha = data[index + 3];
+          if (alpha > 0) {
+            image[x].push(y);
+          }
+        }
+      }
+    })
+    .catch((error) => {
+      console.error("Font loading failed:", error);
+    });
 }
 setCanvas();
 function fading() {
