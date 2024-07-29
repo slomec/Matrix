@@ -36,8 +36,11 @@ window.wallpaperPropertyListener = {
       intervals = properties.intervals.value;
     }
     if (properties.digitsize) {
+      const oldFontSize = fontSize;
       fontSize = properties.digitsize.value;
-      setCanvas();
+      if (fontSize != oldFontSize) {
+        setCanvas();
+      }
     }
     if (properties.chanceofnumberdisappearing) {
       chanseOfdeasapear = properties.chanceofnumberdisappearing.value;
@@ -46,18 +49,24 @@ window.wallpaperPropertyListener = {
       timeInterval = Math.round(properties.intervaltime.value * (1000 / speedOfFall));
     }
     if (properties.textsize) {
+      const oldTextSize = textSize;
       textSize = properties.textsize.value;
-      setCanvas();
+      if (textSize != oldTextSize) {
+        setCanvas();
+      }
     }
     if (properties.numberofdigits) {
       chanseOfspawn = properties.numberofdigits.value / 100;
     }
     if (properties.speedoffall) {
-      speedOfFall = properties.speedoffall.value;
+      speedOfFall = 200 - properties.speedoffall.value;
     }
     if (properties.text) {
+      const oldText = text;
       text = properties.text.value;
-      setCanvas();
+      if (text != oldText) {
+        setCanvas();
+      }
     }
     if (properties.textflickeringspeed) {
       imageUpdateSpeed = Math.round(properties.textflickeringspeed.value * (1000 / speedOfFall));
@@ -68,7 +77,7 @@ window.wallpaperPropertyListener = {
   },
 };
 
-let text = "matrix";
+let text = "";
 let intervals = false;
 let textSize = 40;
 let timeInterval = 200;
@@ -95,8 +104,6 @@ canvas.height = window.innerHeight;
 let image = [];
 let drops = [];
 function setCanvas() {
-  image = [];
-  drops = [];
   const columns = Math.ceil(canvas.width / fontSize);
   const rows = Math.ceil(canvas.height / fontSize);
 
@@ -111,12 +118,14 @@ function setCanvas() {
       const y = Math.round(rows / 2 + textSize / (fontSize / 16) / 4);
       textCtx.fillText(text, x, y);
 
+      drops = [];
       for (let i = 0; i < columns; i++) {
         drops.push([]);
       }
       const imageData = textCtx.getImageData(0, 0, window.innerWidth, window.innerHeight);
       const data = imageData.data;
 
+      image = [];
       for (let i = 0; i < columns; i++) {
         image.push([]);
       }
