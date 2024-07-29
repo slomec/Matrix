@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matrix Effect</title>
     <style>
+            @font-face {
+        font-family: 'pixel';
+        src: url('./PixeloidMono.ttf') format('truetype');
+      }
         body {
             margin: 0;
             overflow: hidden;
@@ -18,6 +22,6 @@
 <body>
     <canvas id="text" style="position: absolute;"></canvas>
     <canvas id="matrix" style="position: absolute;"></canvas>
-    <script type="text/javascript" src="./index.js"></script>
+    <script type="module" src="./index.js"></script>
 </body>
 </html>
