@@ -77,7 +77,7 @@ window.wallpaperPropertyListener = {
   },
 };
 
-let text = "";
+let text = "ыыы";
 let intervals = false;
 let textSize = 40;
 let timeInterval = 200;
@@ -87,9 +87,9 @@ let chanseOfdeasapear = 0.02;
 let fadingSpeed = 0.1;
 let speedOfFall = 66;
 let fontSize = 16;
-let imageUpdateSpeed = 15;
+let imageUpdateSpeed = 20;
 
-let alpha = 1;
+let alpha = 0;
 let col = 0;
 
 const canvasText = document.getElementById("text");
@@ -98,8 +98,14 @@ const textCtx = canvasText.getContext("2d");
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
+const canvasImage = document.getElementById("image");
+const imageCtx = canvasImage.getContext("2d");
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
+canvasImage.width = window.innerWidth;
+canvasImage.height = window.innerHeight;
 
 let image = [];
 let drops = [];
@@ -144,12 +150,12 @@ function setCanvas() {
     });
 }
 setCanvas();
-function fading() {
-  ctx.fillStyle = `rgba(0, 0, 0, ${fadingSpeed})`;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+function fading(can) {
+  can.fillStyle = `rgba(0, 0, 0, ${fadingSpeed})`;
+  can.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-function drawFall(fallingCounter) {
+function drawFall(imageUpdateCallingCounter) {
   ctx.fillStyle = `rgb(${colors[col]})`;
   ctx.font = `${fontSize}px monospace`;
   for (let i = 0; i < drops.length; i++) {
@@ -161,7 +167,7 @@ function drawFall(fallingCounter) {
       }
       drops[i][k]++;
     }
-    if (!intervals | (fallingCounter < timeInterval / 2)) {
+    if (!intervals | (imageUpdateCallingCounter < timeInterval / 2)) {
       if (Math.random() <= chanseOfspawn) {
         drops[i].splice(0, 0, 0);
       }
@@ -169,38 +175,38 @@ function drawFall(fallingCounter) {
   }
 }
 
-function drawImage() {
-  ctx.fillStyle = `rgba(${colors[col]}, ${alpha})`;
-  ctx.font = `${fontSize}px monospace`;
+function drawImage(c) {
+  imageCtx.clearRect(0, 0, canvasImage.width, canvasImage.height);
+  imageCtx.fillStyle = `rgba(${colors[col]}, ${(imageUpdateSpeed - alpha) / imageUpdateSpeed})`;
+  imageCtx.font = `${fontSize}px monospace`;
   for (let i = 0; i < image.length; i++) {
     for (let k in image[i]) {
       const text = Math.random() > 0.5 ? "0" : "1";
-      ctx.fillText(text, i * fontSize, image[i][k] * fontSize);
+      imageCtx.fillText(text, i * fontSize, image[i][k] * fontSize);
     }
   }
 }
 
 let prevSpeedOfFall = speedOfFall;
 function update() {
-  let counter = 0;
-  let fallingCounter = 0;
+  let imageUpdateCallingCounter = 0;
   const interval = setInterval(() => {
-    drawFall(fallingCounter);
+    drawFall(imageUpdateCallingCounter);
 
-    if (!counter & (!intervals | (fallingCounter >= timeInterval / 2))) {
+    if (!intervals | (imageUpdateCallingCounter >= timeInterval / 2)) {
       drawImage();
+      alpha = (alpha + 1) % imageUpdateSpeed;
     }
-    fading();
+    fading(ctx);
     if (prevSpeedOfFall != speedOfFall) {
       prevSpeedOfFall = speedOfFall;
       clearInterval(interval);
       update();
     }
-    if (fallingCounter == timeInterval - 1) {
+    if (imageUpdateCallingCounter == timeInterval - 1) {
       col = (col + 1) % colors.length;
     }
-    counter = (counter + 1) % imageUpdateSpeed;
-    fallingCounter = (fallingCounter + 1) % timeInterval;
+    imageUpdateCallingCounter = (imageUpdateCallingCounter + 1) % timeInterval;
   }, speedOfFall);
 }
 update();
